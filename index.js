@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pkcxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -35,6 +35,17 @@ async function run() {
                 res.status(200).send(result);
             } catch (error) {
                 res.status(500).send({ error: "Failed to fetch visa data" });
+            }
+        })
+
+        app.get('/visas/:id', async (req, res) => {
+            try {
+                const id = req.params.id;
+                const query = {_id: new ObjectId(id)};
+                const result = await visaCollection.findOne(query);
+                res.status(200).send(result);
+            } catch (error) {
+                res.status(500).send({ error: `Failed to fetch ${id} visa data`});
             }
         })
 

@@ -1,3 +1,4 @@
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -9,7 +10,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pkcxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -27,6 +27,7 @@ async function run() {
         await client.connect();
 
         const visaCollection = client.db('visaDB').collection('visas');
+        const visaAppliedCollection = client.db('visaDB').collection('visa_applications');
 
         app.get('/visas', async (req, res) => {
             try {
@@ -46,6 +47,16 @@ async function run() {
                 res.status(200).send(result);
             } catch (error) {
                 res.status(500).send({ error: `Failed to fetch ${id} visa data`});
+            }
+        })
+        
+        app.post('/visa-application', async (req, res) => {
+            const newVisa = req.body;
+            try {
+                const result = await visaAppliedCollection.insertOne(newVisa);
+                res.status(200).send(result);
+            } catch (error) {
+                res.status(500).send({ error: `Failed to add visa data`});
             }
         })
 

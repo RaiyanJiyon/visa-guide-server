@@ -42,21 +42,31 @@ async function run() {
         app.get('/visas/:id', async (req, res) => {
             try {
                 const id = req.params.id;
-                const query = {_id: new ObjectId(id)};
+                const query = { _id: new ObjectId(id) };
                 const result = await visaCollection.findOne(query);
                 res.status(200).send(result);
             } catch (error) {
-                res.status(500).send({ error: `Failed to fetch ${id} visa data`});
+                res.status(500).send({ error: `Failed to fetch ${id} visa data` });
             }
         })
-        
-        app.post('/visa-application', async (req, res) => {
+
+        app.post('/visas', async (req, res) => {
             const newVisa = req.body;
             try {
-                const result = await visaAppliedCollection.insertOne(newVisa);
+                const result = await visaCollection.insertOne(newVisa);
                 res.status(200).send(result);
             } catch (error) {
-                res.status(500).send({ error: `Failed to add visa data`});
+                res.status(500).send({ error: `Failed to add visa data` })
+            }
+        })
+
+        app.post('/visa-application', async (req, res) => {
+            const newVisaApplication = req.body;
+            try {
+                const result = await visaAppliedCollection.insertOne(newVisaApplication);
+                res.status(200).send(result);
+            } catch (error) {
+                res.status(500).send({ error: `Failed to add visa application data` });
             }
         })
 

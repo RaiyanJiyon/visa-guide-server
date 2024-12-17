@@ -49,9 +49,19 @@ async function run() {
                 res.status(500).send({ error: `Failed to fetch ${id} visa data` });
             }
         })
+        
+        app.get('/featured-visas', async (req, res) => {
+            try {
+                const result = await visaCollection.find().sort({ added_date: -1 }).limit(6).toArray();
+                res.status(200).send(result);
+            } catch (error) {
+                res.status(500).send({ error: 'Failed to fetch featured visa data' });
+            }
+        });        
 
         app.post('/visas', async (req, res) => {
             const newVisa = req.body;
+            newVisa.added_date = new Date();
             try {
                 const result = await visaCollection.insertOne(newVisa);
                 res.status(200).send(result);

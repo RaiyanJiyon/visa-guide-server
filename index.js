@@ -58,6 +58,18 @@ async function run() {
                 res.status(500).send({ error: 'Failed to fetch featured visa data' });
             }
         });        
+        
+        app.get('/added-visa/:email', async (req, res) => {
+            try {
+                const email = req.params.email;
+                const query = { email: email };
+                const result = await visaCollection.find(query).toArray();
+                res.status(200).send(result);
+            } catch (error) {
+                res.status(500).send({ error: 'Failed to fetch visa data according to user email' });
+            }
+        });
+        
 
         app.post('/visas', async (req, res) => {
             const newVisa = req.body;

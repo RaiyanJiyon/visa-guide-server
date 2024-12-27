@@ -49,7 +49,7 @@ async function run() {
                 res.status(500).send({ error: `Failed to fetch ${id} visa data` });
             }
         })
-        
+
         app.get('/featured-visas', async (req, res) => {
             try {
                 const result = await visaCollection.find().sort({ added_date: -1 }).limit(6).toArray();
@@ -57,8 +57,8 @@ async function run() {
             } catch (error) {
                 res.status(500).send({ error: 'Failed to fetch featured visa data' });
             }
-        });        
-        
+        });
+
         app.get('/added-visa/:email', async (req, res) => {
             try {
                 const email = req.params.email;
@@ -69,7 +69,6 @@ async function run() {
                 res.status(500).send({ error: 'Failed to fetch visa data according to user email' });
             }
         });
-        
 
         app.post('/visas', async (req, res) => {
             const newVisa = req.body;
@@ -89,6 +88,47 @@ async function run() {
                 res.status(200).send(result);
             } catch (error) {
                 res.status(500).send({ error: `Failed to add visa application data` });
+            }
+        })
+
+        app.put('/visa/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedVisa = req.body;
+            console.log(updatedVisa);
+
+            const visa = {
+                $set: {
+                    CountryImage: updatedVisa.CountryImage,
+                    CountryName: updatedVisa.CountryName,
+                    Visa_Type: updatedVisa.Visa_Type,
+                    Processing_Time: updatedVisa.Processing_Time,
+                    Age_Restriction: updatedVisa.Age_Restriction,
+                    Fee: updatedVisa.Fee,
+                    Validity: updatedVisa.Validity,
+                    Application_Method: updatedVisa.Application_Method,
+                    Description: updatedVisa.Description,
+                    Required_Documents: updatedVisa.Required_Documents,
+                },
+            };
+            try {
+                const result = await visaCollection.updateOne(filter, visa)
+                res.status(200).send(result);
+            } catch (error) {
+                res.status(500).send({ error: "Failed to update visa" });
+            }
+        })
+
+        app.delete('/visa/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            try {
+                const result = await visaCollection.deleteOne(query)
+                if (result.deletedCount === 1) {
+                    res.status(200).send(result);
+                }
+            } catch (error) {
+                res.status(500).send({ error: "Failed to delete visa" });
             }
         })
 

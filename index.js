@@ -58,6 +58,16 @@ async function run() {
                 res.status(500).send({ error: 'Failed to fetch featured visa data' });
             }
         });
+        
+        app.get('/visa-application', async (req, res) => {
+            try {
+                const query = visaAppliedCollection.find();
+                const result = await query.toArray();
+                res.status(200).send(result);
+            } catch (error) {
+                res.status(500).send({ error: 'Failed to fetch visa application data' });
+            }
+        })
 
         app.get('/added-visa/:email', async (req, res) => {
             try {
@@ -129,6 +139,19 @@ async function run() {
                 }
             } catch (error) {
                 res.status(500).send({ error: "Failed to delete visa" });
+            }
+        })
+
+        app.delete('/visa-application/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            try {
+                const result = await visaAppliedCollection.deleteOne(query)
+                if (result.deletedCount === 1) {
+                    res.status(200).send(result);
+                }
+            } catch (error) {
+                res.status(500).send({ error: "Failed to delete visa application" });
             }
         })
 
